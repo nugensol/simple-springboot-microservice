@@ -65,7 +65,8 @@ node("windows_label") {
 		archiveArtifacts artifacts: 'target/*.jar'
 	}
 	stage("Deployment") {
-
+		unarchive artifacts: $mapping;
+		//deploy onto tomcat or internal server
 	}
 
 }
