@@ -1,8 +1,8 @@
 node("windows_label") {
-	def environment 		= env.ENV_NAME.toLowerCase();
+	def environment 	= env.ENV_NAME.toLowerCase();
 	def git_credentials_Id	= env.GITHUB_SSH_CRED_ID;
-	def artifactory_url		= env.ARTIFACTORY_URL;
-	def sonar_url	 		= env.SONAR_URL;
+	def artifactory_url	= env.ARTIFACTORY_URL;
+	def sonar_url	 	= env.SONAR_URL;
 	def sonar_credential_Id	= env.SONAR_CREDENTIAL_ID;
 	def artifactory_Server	= Artifactory.server env.ARTIFACTORY_CRED_ID;	
 	
@@ -20,9 +20,9 @@ node("windows_label") {
 	def sonarProjectName;
 	def sonarDoScan;
 
-	def	artifactPackageName;
-	def	artifactPackagePatten;
-	def	artifactName;
+	def artifactPackageName;
+	def artifactPackagePatten;
+	def artifactName;
 	
 	def branchProperties 	= readProperties file: "${configGitRepoName}/${environment}/branch.properties"
 	def pipelineProperties	= readProperties file: "${configGitRepoName}/${environment}/pipeline.properties"
@@ -53,17 +53,16 @@ node("windows_label") {
 		cloneRepo(appGitUrl, appGitBranch);
 	}
 	stage("Build Automation") {
-		bat "mvn install"
-
+		bat "c:\\jenkins_home\\apps\\maven-3.0\\bin\\mvn clean package"
 	}
 	stage("Unit Test") {
-
+		bat "c:\\jenkins_home\\apps\\maven-3.0\\bin\\mvn test"
 	}
 	stage("Code Analysis") {
-		bat "c:\\jenkins_home\\apps\\sonar-scanner-2.8\\bin\\sonar-scanner.exe -Dsonar.projectKey=${sonarProjectKey} -Dsonar.sources=${sonarProjectSrc}"
+		bat "c:\\jenkins_home\\apps\\sonar-scanner-2.8\\bin\\sonar-scanner.exe -Dsonar.projectKey=${sonarProjectKey} -Dsonar.host.url=${sonarUrl} -Dsonar.projectName=${sonarProjectVersion} -Dsonar.sources=${sonarProjectSrc} -Dsonar.projectVersion=${sonarProjectVersion}"	
 	}
 	stage("Build Management") {
-
+		archiveArtifacts artifacts: 'target/*.jar'
 	}
 	stage("Deployment") {
 
